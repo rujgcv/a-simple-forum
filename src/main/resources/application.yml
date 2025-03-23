@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://${fufu.datasource.host}:${fufu.datasource.port}/${fufu.datasource.database}?useSSL=false&serverTimezone=UTC
+    username: ${fufu.datasource.username}
+    password: ${fufu.datasource.password}
+    driver-class-name: ${fufu.datasource.driver-class-name}
+
+#    alioss:
+#      endpoint: ${fufu.alioss.endpoint}
+#      buck-name: ${fufu.alioss.bucketName}
+#  redis:
+#    host: ${fufu.redis.host}
+#    port: ${fufu.redis.port}
+#    database: ${fufu.redis.database}
+
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      fufunode:
+        mapper: debug
+        service: info
+        controller: info
+
+servlet:
+  multipart:
+    #      单个文件上传大小限制
+    max-file-size: 10MB
+    #      单个请求上传大小限制
+    max-request-size: 100MB
