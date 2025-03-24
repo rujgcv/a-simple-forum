@@ -1,6 +1,7 @@
 package com.fufunode.controller.user;
 
 import com.fufunode.enums.Role;
+import com.fufunode.pojo.dto.UserDTO;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
@@ -30,5 +31,19 @@ public class UserController {
     public Result statusChang(@PathVariable("id") Long id){
         log.info("用户启用、禁用:{}",id);
         return userService.statusChang(id);
+    }
+
+    // 新增用户
+    @PutMapping("/add")
+    public Result add(@RequestBody UserDTO userDTO){
+        log.info("新增用户:{}",userDTO);
+        return userService.add(userDTO);
+    }
+
+    // 修改用户信息
+    @PutMapping("/modify")
+    public Result modify(@RequestBody UserDTO userDTO){
+        log.info("修改用户信息:{}",userDTO);
+        return userService.modify(userDTO);
     }
 }

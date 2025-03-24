@@ -3,6 +3,7 @@ package com.fufunode.mapper;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.pojo.entity.User;
 import com.github.pagehelper.Page;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -25,4 +26,17 @@ public interface UserMapper {
     @Update("update t_user set `status` = 0 where id = #{id}")
     void statusChangDisabled(Long id);
 
+    // 新增用户
+    Long add(User user);
+
+    // 根据id查询用户
+    @Select("select * from t_user where id = #{id}")
+    User getUserById(Long id);
+
+    // 根据电话查询用户
+    @Select("select * from t_user where phone = #{phone}")
+    User getUserByPhone(String phone);
+
+    // 修改用户信息
+    Long modify(User user);
 }

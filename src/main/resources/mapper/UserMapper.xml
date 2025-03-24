@@ -4,6 +4,36 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.fufunode.mapper.UserMapper">
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+            insert into t_user(
+                name, phone, password, role
+            ) values (
+                #{name},#{phone},#{password},#{role}
+           )
+    </insert>
+
+    <update id="modify" useGeneratedKeys="true" keyProperty="id">
+        update t_user
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name}
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone}
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password}
+            </if>
+            <if test="avatarUrl != null and avatarUrl != ''">
+                avatar_url = #{avatarUrl}
+            </if>
+            <if test="updateTime != null and updateTime != ''">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
     <select id="pageQuery" resultType="com.fufunode.pojo.entity.User">
         select * from t_user
         <where>
