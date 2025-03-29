@@ -16,19 +16,19 @@
         update t_user
         <set>
             <if test="name != null and name != ''">
-                name = #{name}
+                name = #{name},
             </if>
             <if test="phone != null and phone != ''">
-                phone = #{phone}
+                phone = #{phone},
             </if>
             <if test="password != null and password != ''">
-                password = #{password}
+                password = #{password},
             </if>
             <if test="avatarUrl != null and avatarUrl != ''">
-                avatar_url = #{avatarUrl}
+                avatar_url = #{avatarUrl},
             </if>
-            <if test="updateTime != null and updateTime != ''">
-                update_time = #{updateTime}
+            <if test="updateTime != null">
+                update_time = #{updateTime},
             </if>
         </set>
         where id = #{id}
@@ -46,5 +46,14 @@
             and `role` = #{role}
         </where>
         order by create_time desc
+    </select>
+    <select id="getUserByPhone" resultType="com.fufunode.pojo.entity.User">
+        select * from t_user
+        <where>
+            phone = #{phone}
+            <if test="id != null and id != ''">
+                and id != #{id}
+            </if>
+        </where>
     </select>
 </mapper>

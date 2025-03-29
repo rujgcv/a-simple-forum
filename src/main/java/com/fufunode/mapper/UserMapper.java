@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
+
 @Mapper
 public interface UserMapper {
 
@@ -34,9 +36,12 @@ public interface UserMapper {
     User getUserById(Long id);
 
     // 根据电话查询用户
-    @Select("select * from t_user where phone = #{phone}")
-    User getUserByPhone(String phone);
+    User getUserByPhone(Long id,String phone);
 
     // 修改用户信息
     Long modify(User user);
+
+    // 根据id更新最近修改时间
+    @Update("update t_user set update_time = #{now} where id = #{id}")
+    void updateTimeById(Long id, LocalDateTime now);
 }

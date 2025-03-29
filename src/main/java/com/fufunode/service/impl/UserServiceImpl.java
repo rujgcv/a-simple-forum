@@ -47,15 +47,23 @@ public class UserServiceImpl implements UserService {
         }else {
             userMapper.statusChangActive(id);
         }
+        userMapper.updateTimeById(id,LocalDateTime.now());
         return Result.success();
     }
 
     @Override
     @Transactional
     public Result add(UserDTO userDTO) {
-        // 用户所属电话是否已存在
-        if(userMapper.getUserByPhone(userDTO.getPhone()) != null){
-            return Result.error(MessageConstant.ACCOUNT_EXISTS);
+
+        // 电话不能重复
+        if(userDTO.getPhone() != null && userDTO.getPhone() != ""){
+            String phone = userDTO.getPhone().trim();
+            if (!phone.matches("^1[3-9]\\d{9}$")) {
+                return Result.error(MessageConstant.PHONE_INVALID);
+            }
+            if (userMapper.getUserByPhone(null,phone) != null) {
+                return Result.error(MessageConstant.ACCOUNT_EXISTS);
+            }
         }
 
         // admin端新增用户默认密码
@@ -82,8 +90,18 @@ public class UserServiceImpl implements UserService {
     public Result modify(UserDTO userDTO) {
         // name不为空
         if(userDTO.getName() == null || userDTO.getName() == "") return Result.error(MessageConstant.USERNAME_IS_NULL);
-        // 密码不为空
-        if(userDTO.getPassword() == null || userDTO.getPassword() == "") return Result.error(MessageConstant.PASSWORD_IS_NULL);
+
+        // 电话不能重复
+        if(userDTO.getPhone() != null && userDTO.getPhone() != ""){
+            String phone = userDTO.getPhone().trim();
+            Long id = userDTO.getId();
+            if (!phone.matches("^1[3-9]\\d{9}$")) {
+                return Result.error(MessageConstant.PHONE_INVALID);
+            }
+            if (userMapper.getUserByPhone(id,phone) != null) {
+                return Result.error(MessageConstant.ACCOUNT_EXISTS);
+            }
+        }
 
         User user = User.builder()
                 .id(userDTO.getId())

@@ -34,14 +34,14 @@ public class UserController {
     }
 
     // 新增用户
-    @PutMapping("/add")
+    @PostMapping("/add")
     public Result add(@RequestBody UserDTO userDTO){
         log.info("新增用户:{}",userDTO);
         return userService.add(userDTO);
     }
 
     // 修改用户信息
-    @PutMapping("/modify")
+    @PostMapping("/modify")
     public Result modify(@RequestBody UserDTO userDTO){
         log.info("修改用户信息:{}",userDTO);
         return userService.modify(userDTO);
