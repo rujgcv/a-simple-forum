@@ -2,13 +2,12 @@ package com.fufunode.mapper;
 
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.pojo.entity.User;
+import com.fufunode.result.Result;
 import com.github.pagehelper.Page;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -44,4 +43,11 @@ public interface UserMapper {
     // 根据id更新最近修改时间
     @Update("update t_user set update_time = #{now} where id = #{id}")
     void updateTimeById(Long id, LocalDateTime now);
+
+    // 删除用户
+    @Delete("delete from t_user where id = #{id}")
+    void delById(Long id);
+
+    // 批量删除用户
+    void delBatch(List<Long> ids);
 }

@@ -33,6 +33,13 @@
         </set>
         where id = #{id}
     </update>
+    <delete id="delBatch">
+        delete from t_user
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
 
     <select id="pageQuery" resultType="com.fufunode.pojo.entity.User">
         select * from t_user

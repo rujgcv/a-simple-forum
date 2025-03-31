@@ -5,6 +5,8 @@ import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
 
+import java.util.List;
+
 public interface UserService {
     // 用户分页查询
     PageResult pageQuery(UserPageQueryDTO userPageQueryDTO);
@@ -17,4 +19,10 @@ public interface UserService {
 
     // 修改用户信息
     Result modify(UserDTO userDTO);
+
+    // 删除用户
+    Result delById(Long id);
+
+    // 批量删除用户
+    Result delBatch(List<Long> ids);
 }

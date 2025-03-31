@@ -10,6 +10,7 @@ import com.fufunode.pojo.entity.User;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
 import com.fufunode.service.UserService;
+import com.fufunode.utils.MD5Util;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
@@ -73,12 +74,16 @@ public class UserServiceImpl implements UserService {
 
         // name不为空
         if(userDTO.getName() == null || userDTO.getName() == "") return Result.error(MessageConstant.USERNAME_IS_NULL);
+        // 昵称不得超过30字
+        if(userDTO.getName().length() > 30) return Result.error(MessageConstant.NAME_TOO_LONG);
         // 密码不为空
         if(userDTO.getPassword() == null || userDTO.getPassword() == "") return Result.error(MessageConstant.PASSWORD_IS_NULL);
 
         User user = new User();
         BeanUtils.copyProperties(userDTO,user);
         user.setRole(Role.user);
+        // 加密密码
+        user.setPassword(MD5Util.md5(user.getPassword()));
 
         userMapper.add(user);
 
@@ -112,5 +117,20 @@ public class UserServiceImpl implements UserService {
 
         userMapper.modify(user);
         return Result.success(user.getId());
+    }
+
+    @Override
+    @Transactional
+    public Result delById(Long id) {
+        userMapper.delById(id);
+        return Result.success();
+    }
+
+    @Override
+    @Transactional
+    public Result delBatch(List<Long> ids) {
+        if(ids.size() == 0) return Result.error(MessageConstant.DELETE_USER_IS_NULL);
+        userMapper.delBatch(ids);
+        return Result.success();
     }
 }
