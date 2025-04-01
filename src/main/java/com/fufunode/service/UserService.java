@@ -1,5 +1,6 @@
 package com.fufunode.service;
 
+import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.result.PageResult;
@@ -15,7 +16,7 @@ public interface UserService {
     Result statusChang(Long id);
 
     // 新增用户
-    Result add(UserDTO userDTO);
+    Result add(UserDTO userDTO, Role role);
 
     // 修改用户信息
     Result modify(UserDTO userDTO);

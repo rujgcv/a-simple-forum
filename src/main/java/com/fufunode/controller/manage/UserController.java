@@ -1,4 +1,4 @@
-package com.fufunode.controller.user;
+package com.fufunode.controller.manage;
 
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user/user")
+@RequestMapping("/user")
 @Slf4j
 public class UserController {
 
@@ -24,6 +24,7 @@ public class UserController {
     @GetMapping("/page")
     public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
         log.info("用户分页查询:{}",userPageQueryDTO);
+        userPageQueryDTO.setRole(Role.user);
         PageResult pageResult = userService.pageQuery(userPageQueryDTO);
         return Result.success(pageResult);
     }
@@ -39,7 +40,7 @@ public class UserController {
     @PostMapping("/add")
     public Result add(@RequestBody UserDTO userDTO){
         log.info("新增用户:{}",userDTO);
-        return userService.add(userDTO);
+        return userService.add(userDTO,Role.user);
     }
 
     // 修改用户信息

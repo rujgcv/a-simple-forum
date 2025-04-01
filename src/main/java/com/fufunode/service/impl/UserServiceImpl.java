@@ -29,7 +29,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageResult pageQuery(UserPageQueryDTO userPageQueryDTO) {
-        userPageQueryDTO.setRole(Role.user);
         PageHelper.startPage(userPageQueryDTO.getPage(),userPageQueryDTO.getPageSize());
 
         Page<User> page = userMapper.pageQuery(userPageQueryDTO);
@@ -54,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Result add(UserDTO userDTO) {
+    public Result add(UserDTO userDTO,Role role) {
 
         // 电话不能重复
         if(userDTO.getPhone() != null && userDTO.getPhone() != ""){
@@ -81,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         BeanUtils.copyProperties(userDTO,user);
-        user.setRole(Role.user);
+        user.setRole(role);
         // 加密密码
         user.setPassword(MD5Util.md5(user.getPassword()));
 

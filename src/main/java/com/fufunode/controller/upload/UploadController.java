@@ -19,7 +19,7 @@ public class UploadController {
     private UploadService uploadService;
 
     // 上传头像
-    @PostMapping("/user/upload")
+    @PostMapping("/upload")
     public Result upload(@RequestParam("userId") Long userId,
                        @RequestParam("file") MultipartFile file){
         UploadDTO uploadDTO = UploadDTO.builder()
