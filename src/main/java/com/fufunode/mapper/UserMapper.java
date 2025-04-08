@@ -1,5 +1,6 @@
 package com.fufunode.mapper;
 
+import com.fufunode.pojo.dto.UserLoginDTO;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.pojo.entity.User;
 import com.fufunode.result.Result;
@@ -50,4 +51,12 @@ public interface UserMapper {
 
     // 批量删除用户
     void delBatch(List<Long> ids);
+
+    // 根据name获取用户
+    @Select("select id from t_user where name = #{name}")
+    User getUserByName(String name);
+
+    // 获取用户
+    @Select("select * from t_user where name = #{name} and password = #{password} and role = #{role}")
+    User getUser(UserLoginDTO userLoginDTO);
 }

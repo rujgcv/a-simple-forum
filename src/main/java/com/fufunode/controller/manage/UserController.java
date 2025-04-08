@@ -2,6 +2,7 @@ package com.fufunode.controller.manage;
 
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;
+import com.fufunode.pojo.dto.UserLoginDTO;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
@@ -62,5 +63,12 @@ public class UserController {
     public Result batchDeleteUser(@RequestBody List<Long> ids) {
         log.info("批量删除用户:{}",ids);
         return userService.delBatch(ids);
+    }
+
+    // 用户登录
+    @PostMapping("/login")
+    public Result login(@RequestBody UserLoginDTO userLoginDTO){
+        log.info("用户登录:{}",userLoginDTO);
+        return userService.login(userLoginDTO);
     }
 }

@@ -2,6 +2,7 @@ package com.fufunode.service;
 
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;
+import com.fufunode.pojo.dto.UserLoginDTO;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
@@ -26,4 +27,7 @@ public interface UserService {
 
     // 批量删除用户
     Result delBatch(List<Long> ids);
+
+    // 用户登录
+    Result login(UserLoginDTO userLoginDTO);
 }

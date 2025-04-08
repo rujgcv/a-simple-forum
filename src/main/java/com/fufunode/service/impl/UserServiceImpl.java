@@ -2,24 +2,30 @@ package com.fufunode.service.impl;
 
 import com.fufunode.constant.MessageConstant;
 import com.fufunode.constant.PasswordConstant;
+import com.fufunode.context.BaseContext;
 import com.fufunode.enums.Role;
 import com.fufunode.mapper.UserMapper;
 import com.fufunode.pojo.dto.UserDTO;
+import com.fufunode.pojo.dto.UserLoginDTO;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
 import com.fufunode.pojo.entity.User;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
 import com.fufunode.service.UserService;
+import com.fufunode.utils.JwtUtil;
 import com.fufunode.utils.MD5Util;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -74,9 +80,14 @@ public class UserServiceImpl implements UserService {
         // name不为空
         if(userDTO.getName() == null || userDTO.getName() == "") return Result.error(MessageConstant.USERNAME_IS_NULL);
         // 昵称不得超过30字
-        if(userDTO.getName().length() > 30) return Result.error(MessageConstant.NAME_TOO_LONG);
+        if(userDTO.getName().length() > 20) return Result.error(MessageConstant.NAME_TOO_LONG);
         // 密码不为空
         if(userDTO.getPassword() == null || userDTO.getPassword() == "") return Result.error(MessageConstant.PASSWORD_IS_NULL);
+        // 密码长度规定
+        if(userDTO.getPassword().length()>20 || userDTO.getPassword().length()<6) return Result.error(MessageConstant.PASSWORD_INVAILD);
+
+        // 用户已存在(name重复)
+        if(userMapper.getUserByName(userDTO.getName()) != null) return Result.error(MessageConstant.Name_OCCUPIED);
 
         User user = new User();
         BeanUtils.copyProperties(userDTO,user);
@@ -131,5 +142,47 @@ public class UserServiceImpl implements UserService {
         if(ids.size() == 0) return Result.error(MessageConstant.DELETE_USER_IS_NULL);
         userMapper.delBatch(ids);
         return Result.success();
+    }
+
+    @Override
+    public Result login(UserLoginDTO userLoginDTO) {
+        // 校验
+        if (StringUtils.isBlank(userLoginDTO.getName())) {
+            return Result.error(MessageConstant.USERNAME_IS_NULL);
+        }
+        if (StringUtils.isBlank(userLoginDTO.getPassword())) {
+            return Result.error(MessageConstant.PASSWORD_IS_NULL);
+        }
+        if (userLoginDTO.getRole() == null) {
+            return Result.error(MessageConstant.Role_INVALID);
+        }
+
+        userLoginDTO.setPassword(MD5Util.md5(userLoginDTO.getPassword()));
+        // 查询用户是否存在
+        if(userMapper.getUserByName(userLoginDTO.getName()) == null){
+            return Result.error(MessageConstant.ACCOUNT_NOT_EXISTS);
+        }
+
+        // 查询用户
+        User user = userMapper.getUser(userLoginDTO);
+        if(user == null){
+            return Result.error(MessageConstant.LOGIN_FAILED);
+        }
+        // 查询用户状态
+        if(!user.isStatus()) {
+            return Result.error(MessageConstant.USER_DISABLE);
+        }
+
+        // 存储id到线程
+        BaseContext.setCurrentId(user.getId());
+
+        // 生成Token
+        String token = JwtUtil.getToken(user.getName(), user.getRole().name());
+
+        // 返回Token和用户信息
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", token);
+        data.put("user", user);
+        return Result.success(data);
     }
 }

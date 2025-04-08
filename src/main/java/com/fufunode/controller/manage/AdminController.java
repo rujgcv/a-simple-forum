@@ -27,7 +27,7 @@ public class AdminController {
         return Result.success(pageResult);
     }
 
-    // 新增用户
+    // 新增管理员
     @PostMapping("/add")
     public Result add(@RequestBody UserDTO userDTO){
         log.info("新增用户:{}",userDTO);
