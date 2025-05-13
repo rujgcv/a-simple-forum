@@ -1,0 +1,42 @@
+package com.fufunode.controller;
+
+import com.fufunode.pojo.dto.UploadDTO;
+import com.fufunode.result.Result;
+import com.fufunode.service.UploadService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+@RestController
+@Slf4j
+@RequestMapping("/upload")
+public class UploadController {
+
+    @Autowired
+    private UploadService uploadService;
+
+    // 上传用户头像
+    @PostMapping("/userAvatar")
+    public Result uploadAvatar(@RequestParam("userId") Long userId,
+                       @RequestParam("file") MultipartFile file){
+        UploadDTO uploadDTO = UploadDTO.builder()
+                .id(userId)
+                .file(file)
+                .build();
+        log.info("上传用户头像: {}",uploadDTO);
+        return uploadService.uploadAvatar(uploadDTO);
+    }
+
+    // 上传贴吧头像
+    @PostMapping("/tabImg")
+    public Result uploadTabImg(@RequestParam("tabId") Long tabId,
+                           @RequestParam("file") MultipartFile file) {
+        UploadDTO uploadDTO = UploadDTO.builder()
+                .id(tabId)
+                .file(file)
+                .build();
+        log.info("上传贴吧头像: {}", uploadDTO);
+        return uploadService.uploadTabImg(uploadDTO);
+    }
+}

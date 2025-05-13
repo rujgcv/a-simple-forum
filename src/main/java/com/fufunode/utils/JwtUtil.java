@@ -13,10 +13,11 @@ public class JwtUtil {
     private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
     private static final long EXPIRATION_MS = 30L * 24 * 60 * 60 * 1000; // 30天
 
-    public static String getToken(String username, String role) {
+    public static String getToken(Long userId, String username, String role) {
         try {
             return JWT.create()
                     .withSubject(username)
+                    .withClaim("id",userId)
                     .withClaim("role", role)
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_MS))
@@ -29,12 +30,20 @@ public class JwtUtil {
     public static boolean parseToken(String token) {
         try {
             JWTVerifier verifier = JWT.require(ALGORITHM).build();
-            DecodedJWT jwt = verifier.verify(token);
-            String username = jwt.getSubject();
-            String role = jwt.getClaim("role").asString();
+            verifier.verify(token);
             return true;
         } catch (JWTVerificationException e) {
             return false;
+        }
+    }
+
+    public static Long parseTokenToUserId(String token) {
+        try {
+            JWTVerifier verifier = JWT.require(ALGORITHM).build();
+            DecodedJWT jwt = verifier.verify(token);
+            return jwt.getClaim("id").asLong();  // 从Token中提取用户ID
+        } catch (JWTVerificationException e) {
+            return null;
         }
     }
 }

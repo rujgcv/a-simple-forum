@@ -53,10 +53,13 @@ public interface UserMapper {
     void delBatch(List<Long> ids);
 
     // 根据name获取用户
-    @Select("select id from t_user where name = #{name}")
+    @Select("select * from t_user where name = #{name}")
     User getUserByName(String name);
 
+    // 登录验证用户是否存在(name可能是昵称也可能是电话)
+    @Select("select id from t_user where name = #{name} or phone = #{name}")
+    User loginValid(UserLoginDTO userLoginDTO);
+
     // 获取用户
-    @Select("select * from t_user where name = #{name} and password = #{password} and role = #{role}")
     User getUser(UserLoginDTO userLoginDTO);
 }

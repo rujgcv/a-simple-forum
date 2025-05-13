@@ -63,4 +63,17 @@
             </if>
         </where>
     </select>
+    <select id="getUser" resultType="com.fufunode.pojo.entity.User">
+        select * from t_user
+        <where>
+            <if test="name != null and name != ''">
+                name = #{name}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            and password = #{password}
+            and role = #{role}
+        </where>
+    </select>
 </mapper>

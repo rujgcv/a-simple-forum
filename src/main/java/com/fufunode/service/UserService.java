@@ -30,4 +30,7 @@ public interface UserService {
 
     // 用户登录
     Result login(UserLoginDTO userLoginDTO);
+
+    // 获取用户信息
+    Result getUserInfo();
 }

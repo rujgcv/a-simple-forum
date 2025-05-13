@@ -22,6 +22,8 @@ public class LoginInterceptor implements HandlerInterceptor {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
+        Long userId = JwtUtil.parseTokenToUserId(token);
+        if(userId != null) BaseContext.setCurrentId(userId);
         return true;
     }
 

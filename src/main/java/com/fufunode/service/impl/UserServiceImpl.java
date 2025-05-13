@@ -79,8 +79,8 @@ public class UserServiceImpl implements UserService {
 
         // name不为空
         if(userDTO.getName() == null || userDTO.getName() == "") return Result.error(MessageConstant.USERNAME_IS_NULL);
-        // 昵称不得超过30字
-        if(userDTO.getName().length() > 20) return Result.error(MessageConstant.NAME_TOO_LONG);
+        // 昵称不得超过10字
+        if(userDTO.getName().length() >= 10) return Result.error(MessageConstant.NAME_TOO_LONG);
         // 密码不为空
         if(userDTO.getPassword() == null || userDTO.getPassword() == "") return Result.error(MessageConstant.PASSWORD_IS_NULL);
         // 密码长度规定
@@ -106,6 +106,9 @@ public class UserServiceImpl implements UserService {
         // name不为空
         if(userDTO.getName() == null || userDTO.getName() == "") return Result.error(MessageConstant.USERNAME_IS_NULL);
 
+        // 昵称不得超过10字
+        if(userDTO.getName().length() >= 10) return Result.error(MessageConstant.NAME_TOO_LONG);
+
         // 电话不能重复
         if(userDTO.getPhone() != null && userDTO.getPhone() != ""){
             String phone = userDTO.getPhone().trim();
@@ -117,6 +120,10 @@ public class UserServiceImpl implements UserService {
                 return Result.error(MessageConstant.ACCOUNT_EXISTS);
             }
         }
+
+        User userByName = userMapper.getUserByName(userDTO.getName());
+        // 用户已存在(name重复)
+        if(userByName != null && !userByName.getName().equals(userMapper.getUserById(userDTO.getId()).getName())) return Result.error(MessageConstant.Name_OCCUPIED);
 
         User user = User.builder()
                 .id(userDTO.getId())
@@ -159,8 +166,13 @@ public class UserServiceImpl implements UserService {
 
         userLoginDTO.setPassword(MD5Util.md5(userLoginDTO.getPassword()));
         // 查询用户是否存在
-        if(userMapper.getUserByName(userLoginDTO.getName()) == null){
+        if(userMapper.loginValid(userLoginDTO) == null){
             return Result.error(MessageConstant.ACCOUNT_NOT_EXISTS);
+        }
+
+        if(userLoginDTO.getName().length() == 11){
+            userLoginDTO.setPhone(userLoginDTO.getName());
+            userLoginDTO.setName(null);
         }
 
         // 查询用户
@@ -177,12 +189,20 @@ public class UserServiceImpl implements UserService {
         BaseContext.setCurrentId(user.getId());
 
         // 生成Token
-        String token = JwtUtil.getToken(user.getName(), user.getRole().name());
+        String token = JwtUtil.getToken(user.getId(),user.getName(), user.getRole().name());
 
         // 返回Token和用户信息
         Map<String, Object> data = new HashMap<>();
         data.put("token", token);
         data.put("user", user);
         return Result.success(data);
+    }
+
+    @Override
+    public Result getUserInfo() {
+        Long id = BaseContext.getCurrentId();
+        if(id == null) return Result.error(MessageConstant.ACCOUNT_NOT_EXISTS);
+        User user = userMapper.getUserById(id);
+        return Result.success(user);
     }
 }

@@ -1,4 +1,4 @@
-package com.fufunode.controller.manage;
+package com.fufunode.controller;
 
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;
@@ -70,5 +70,11 @@ public class UserController {
     public Result login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户登录:{}",userLoginDTO);
         return userService.login(userLoginDTO);
+    }
+
+    // 获取用户信息
+    @GetMapping("/userinfo")
+    public Result getUserInfo(){
+        return userService.getUserInfo();
     }
 }

@@ -5,6 +5,9 @@ import com.fufunode.result.Result;
 
 public interface UploadService {
 
-    // 上传头像
-    Result upload(UploadDTO uploadDTO);
+    // 上传用户头像
+    Result uploadAvatar(UploadDTO uploadDTO);
+
+    // 上传贴吧头像
+    Result uploadTabImg(UploadDTO uploadDTO);
 }

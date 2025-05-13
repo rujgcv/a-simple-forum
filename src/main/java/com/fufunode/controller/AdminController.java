@@ -1,4 +1,4 @@
-package com.fufunode.controller.manage;
+package com.fufunode.controller;
 
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;

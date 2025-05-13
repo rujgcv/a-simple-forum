@@ -20,9 +20,9 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     @Transactional
-    public Result upload(UploadDTO uploadDTO) {
+    public Result uploadAvatar(UploadDTO uploadDTO) {
         String path = null;
-        Long id = uploadDTO.getUserId();
+        Long id = uploadDTO.getId();
         try {
             path = UploadUtil.uploadImage(uploadDTO.getFile());
         } catch (IOException e) {
@@ -32,6 +32,24 @@ public class UploadServiceImpl implements UploadService {
             return Result.error(MessageConstant.UPLOAD_FAILED);
         }else {
             uploadMapper.addAvatar(id,path);
+            return Result.success();
+        }
+    }
+
+    @Override
+    @Transactional
+    public Result uploadTabImg(UploadDTO uploadDTO) {
+        String path = null;
+        Long id = uploadDTO.getId();
+        try {
+            path = UploadUtil.uploadImage(uploadDTO.getFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (path == null || path == "") {
+            return Result.error(MessageConstant.UPLOAD_FAILED);
+        }else {
+            uploadMapper.addTabImg(id,path);
             return Result.success();
         }
     }
