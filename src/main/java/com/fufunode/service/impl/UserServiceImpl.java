@@ -14,6 +14,7 @@ import com.fufunode.result.Result;
 import com.fufunode.service.UserService;
 import com.fufunode.utils.JwtUtil;
 import com.fufunode.utils.MD5Util;
+import com.fufunode.utils.UploadUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.micrometer.common.util.StringUtils;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +141,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Result delById(Long id) {
+        User u = userMapper.getUserById(id);
+        String avatarUrl = u.getAvatarUrl();
+        if(avatarUrl != null && !avatarUrl.isEmpty()){
+            if(!UploadUtil.delete(avatarUrl)){
+                return Result.error(MessageConstant.IMG_DELETE_ERROR);
+            }
+        }
         userMapper.delById(id);
         return Result.success();
     }
@@ -147,6 +156,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Result delBatch(List<Long> ids) {
         if(ids.size() == 0) return Result.error(MessageConstant.DELETE_USER_IS_NULL);
+
+        List<String> imgUrl = new ArrayList<>();
+        List<String> avatars = userMapper.getAvatars(ids);
+        for(String avatar : avatars){
+            if(avatar != null && !avatar.isEmpty()){
+                imgUrl.add(avatar);
+            }
+        }
+        if(!imgUrl.isEmpty()) UploadUtil.deleteBatch(imgUrl);
         userMapper.delBatch(ids);
         return Result.success();
     }

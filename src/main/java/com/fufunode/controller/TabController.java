@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tab")
 @Slf4j
@@ -46,5 +48,19 @@ public class TabController {
     public Result modify(@RequestBody TabDTO tabDTO){
         log.info("修改贴吧:{}",tabDTO);
         return tabService.modify(tabDTO);
+    }
+
+    // 删除贴吧
+    @DeleteMapping("/{id}")
+    public Result del(@PathVariable("id") Long id){
+        log.info("删除贴吧:{}",id);
+        return tabService.del(id);
+    }
+
+    // 批量删除贴吧
+    @PostMapping("/delBatch")
+    public Result delBatch(@RequestBody List<Long> ids){
+        log.info("批量删除贴吧:{}",ids);
+        return tabService.delBatch(ids);
     }
 }

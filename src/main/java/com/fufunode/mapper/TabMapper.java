@@ -4,11 +4,13 @@ import com.fufunode.pojo.dto.TabPageQueryDTO;
 import com.fufunode.pojo.entity.Tab;
 import com.fufunode.pojo.entity.TabDetail;
 import com.github.pagehelper.Page;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface TabMapper {
@@ -45,4 +47,14 @@ public interface TabMapper {
 
     // 修改贴吧
     Long modify(Tab tab);
+
+    // 根据id删除贴吧
+    @Delete("delete from t_tab where id = #{id}")
+    void delById(Long id);
+
+    // 根据一组id获取图片路径
+    List<String> getImgs(List<Long> ids);
+
+    // 批量删除贴吧
+    void delBatch(List<Long> ids);
 }

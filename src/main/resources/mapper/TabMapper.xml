@@ -50,4 +50,18 @@
         </where>
         order by create_time desc
     </select>
+    <select id="getImgs" resultType="java.lang.String">
+        select img_url from t_tab
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <delete id="delBatch">
+        delete from t_tab
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

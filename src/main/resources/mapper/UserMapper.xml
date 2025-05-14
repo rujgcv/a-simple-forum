@@ -76,4 +76,11 @@
             and role = #{role}
         </where>
     </select>
+    <select id="getAvatars" resultType="java.lang.String">
+        select avatar_url from t_user
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

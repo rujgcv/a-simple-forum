@@ -62,4 +62,7 @@ public interface UserMapper {
 
     // 获取用户
     User getUser(UserLoginDTO userLoginDTO);
+
+    // 根据一组id获取头像
+    List<String> getAvatars(List<Long> ids);
 }

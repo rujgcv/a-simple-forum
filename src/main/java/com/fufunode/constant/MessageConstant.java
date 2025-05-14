@@ -12,6 +12,7 @@ public class MessageConstant {
     public static final String UPLOAD_FAILED = "上传失败";
     public static final String NAME_TOO_LONG = "用户名不得超过20字";
     public static final String DELETE_USER_IS_NULL = "删除用户不能为空";
+    public static final String DELETE_TAB_IS_NULL = "删除贴吧不能为空";
     public static final String Name_OCCUPIED = "昵称被占用";
     public static final String PASSWORD_INVAILD = "密码长度6~20位";
     public static final String LOGIN_FAILED = "用户名或密码错误";
@@ -20,4 +21,5 @@ public class MessageConstant {
     public static final String TAB_OCCUPIED = "贴吧已存在";
     public static final String TAB_NAME_TOO_LONG = "贴吧名称不能超过20字符";
     public static final String TAB_TYPE_IS_NULL = "贴吧类别不能为空";
+    public static final String IMG_DELETE_ERROR = "图片删除失败";
 }

@@ -6,9 +6,11 @@ import com.fufunode.pojo.dto.TabDTO;
 import com.fufunode.pojo.dto.TabPageQueryDTO;
 import com.fufunode.pojo.entity.Tab;
 import com.fufunode.pojo.entity.TabDetail;
+import com.fufunode.pojo.entity.User;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
 import com.fufunode.service.TabService;
+import com.fufunode.utils.UploadUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -91,5 +94,34 @@ public class TabServiceImpl implements TabService {
         tabMapper.modify(tab);
 
         return Result.success(tab.getId());
+    }
+
+    @Override
+    public Result del(Long id) {
+        Tab t = tabMapper.getTabById(id);
+        String imgUrl = t.getImgUrl();
+        if(imgUrl != null && !imgUrl.isEmpty()){
+            if(!UploadUtil.delete(imgUrl)){
+                return Result.error(MessageConstant.IMG_DELETE_ERROR);
+            }
+        }
+        tabMapper.delById(id);
+        return Result.success();
+    }
+
+    @Override
+    public Result delBatch(List<Long> ids) {
+        if(ids.size() == 0) return Result.error(MessageConstant.DELETE_TAB_IS_NULL);
+
+        List<String> imgUrl = new ArrayList<>();
+        List<String> imgs = tabMapper.getImgs(ids);
+        for(String img : imgs){
+            if(img != null && !img.isEmpty()){
+                imgUrl.add(img);
+            }
+        }
+        if(!imgUrl.isEmpty()) UploadUtil.deleteBatch(imgUrl);
+        tabMapper.delBatch(ids);
+        return Result.success();
     }
 }
