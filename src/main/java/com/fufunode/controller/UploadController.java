@@ -39,4 +39,16 @@ public class UploadController {
         log.info("上传贴吧头像: {}", uploadDTO);
         return uploadService.uploadTabImg(uploadDTO);
     }
+
+    // 上传轮播图
+    @PostMapping("/banner")
+    public Result uploadBanner(@RequestParam("id") Long bannerId,
+                               @RequestParam("file") MultipartFile file){
+        UploadDTO uploadDTO = UploadDTO.builder()
+                .id(bannerId)
+                .file(file)
+                .build();
+        log.info("上传轮播图:{}",uploadDTO);
+        return uploadService.uploadBanner(uploadDTO);
+    }
 }

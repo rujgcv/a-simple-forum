@@ -1,5 +1,6 @@
 package com.fufunode.service;
 
+import com.fufunode.pojo.dto.BannerDTO;
 import com.fufunode.pojo.dto.UploadDTO;
 import com.fufunode.result.Result;
 
@@ -10,4 +11,7 @@ public interface UploadService {
 
     // 上传贴吧头像
     Result uploadTabImg(UploadDTO uploadDTO);
+
+    // 上传轮播图
+    Result uploadBanner(UploadDTO uploadDTO);
 }

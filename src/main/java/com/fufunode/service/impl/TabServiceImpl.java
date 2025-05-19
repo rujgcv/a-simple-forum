@@ -80,8 +80,11 @@ public class TabServiceImpl implements TabService {
         if(tabDTO.getTypeId() == 0) return Result.error(MessageConstant.TAB_TYPE_IS_NULL);
         if(tabDTO.getName().length() > 20) return Result.error(MessageConstant.TAB_NAME_TOO_LONG);
 
+        // 昵称不能重复
         Tab tabByName = tabMapper.getTabByName(tabDTO.getName());
         if(tabByName != null && !tabByName.getName().equals(tabMapper.getTabById(tabDTO.getId()).getName())) return Result.error(MessageConstant.TAB_OCCUPIED);
+
+        // 如果修改图片，先删除之前的图片
 
         Tab tab = Tab.builder()
                 .id(tabDTO.getId())

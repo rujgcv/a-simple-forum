@@ -13,4 +13,7 @@ public interface UploadMapper {
 
     @Update("update t_tab set img_url = #{imgUrl} where id = #{id}")
     void addTabImg(Long id, String imgUrl);
+
+    @Update("update t_banner set img_url = #{imgUrl} where id = #{id}")
+    void addBannerImg(Long id, String imgUrl);
 }

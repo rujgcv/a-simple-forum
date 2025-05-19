@@ -22,4 +22,7 @@ public class MessageConstant {
     public static final String TAB_NAME_TOO_LONG = "贴吧名称不能超过20字符";
     public static final String TAB_TYPE_IS_NULL = "贴吧类别不能为空";
     public static final String IMG_DELETE_ERROR = "图片删除失败";
+    public static final String BANNER_Link_IS_NULL = "轮播图跳转路径不能为空";
+    public static final String BANNER_File_IS_NULL = "轮播图图片文件不能为空";
+    public static final String UNKNOWN_ERROR = "未知错误";
 }
