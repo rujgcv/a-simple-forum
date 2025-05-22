@@ -38,21 +38,17 @@ public class UploadServiceImpl implements UploadService {
         Long id = uploadDTO.getId();
         User user = userMapper.getUserById(id);
         String oldAvatar = user.getAvatarUrl();
-        try {
-            path = UploadUtil.uploadImage(uploadDTO.getFile());
-            if (path == null || path.isEmpty()) {
-                return Result.error(MessageConstant.UPLOAD_FAILED);
-            }
-            uploadMapper.addAvatar(id,path);
-
-            if(oldAvatar != null && !oldAvatar.isEmpty()){
-                UploadUtil.delete(oldAvatar);
-            }
-
-            return Result.success();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        path = UploadUtil.uploadImage(uploadDTO.getFile());
+        if (path == null || path.isEmpty()) {
+            return Result.error(MessageConstant.UPLOAD_FAILED);
         }
+        uploadMapper.addAvatar(id,path);
+
+        if(oldAvatar != null && !oldAvatar.isEmpty()){
+            UploadUtil.delete(oldAvatar);
+        }
+
+        return Result.success();
     }
 
     @Override
@@ -62,21 +58,18 @@ public class UploadServiceImpl implements UploadService {
         Long id = uploadDTO.getId();
         Tab tab = tabMapper.getTabById(id);
         String oldImgUrl = tab.getImgUrl();
-        try {
-            path = UploadUtil.uploadImage(uploadDTO.getFile());
-            if (path == null || path.isEmpty()) {
-                return Result.error(MessageConstant.UPLOAD_FAILED);
-            }
-            uploadMapper.addTabImg(id,path);
 
-            if(oldImgUrl != null && !oldImgUrl.isEmpty()){
-                UploadUtil.delete(oldImgUrl);
-            }
-
-            return Result.success();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        path = UploadUtil.uploadImage(uploadDTO.getFile());
+        if (path == null || path.isEmpty()) {
+            return Result.error(MessageConstant.UPLOAD_FAILED);
         }
+        uploadMapper.addTabImg(id,path);
+
+        if(oldImgUrl != null && !oldImgUrl.isEmpty()){
+            UploadUtil.delete(oldImgUrl);
+        }
+
+        return Result.success();
     }
 
     // 上传轮播图
@@ -86,21 +79,16 @@ public class UploadServiceImpl implements UploadService {
         Long id = uploadDTO.getId();
         Banner banner = bannerMapper.getById(id);
         String oldImgUrl = banner.getImgUrl();
-        try {
-            path = UploadUtil.uploadImage(uploadDTO.getFile());
-            if (path == null || path.isEmpty()) {
-                return Result.error(MessageConstant.UPLOAD_FAILED);
-            }
-            uploadMapper.addBannerImg(id,path);
-
-            if(oldImgUrl != null && !oldImgUrl.isEmpty()){
-                UploadUtil.delete(oldImgUrl);
-            }
-
-            return Result.success();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        path = UploadUtil.uploadImage(uploadDTO.getFile());
+        if (path == null || path.isEmpty()) {
+            return Result.error(MessageConstant.UPLOAD_FAILED);
         }
+        uploadMapper.addBannerImg(id,path);
+
+        if(oldImgUrl != null && !oldImgUrl.isEmpty()){
+            UploadUtil.delete(oldImgUrl);
+        }
+
+        return Result.success();
     }
 }
