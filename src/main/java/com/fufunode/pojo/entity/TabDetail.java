@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TabDetail implements Serializable {
-    private static final boolean TAB_ACTIVE = true; // 帖子启用
-    private static final boolean TAB_DISABLED = false; // 帖子禁用
     private Long id;
     private Long typeId;
     private String type;

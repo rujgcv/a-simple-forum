@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fufunode.mapper.PostMapper">
+    <select id="pageQuery" resultType="com.fufunode.pojo.vo.PostVO">
+        select p.id, p.title, p.description, p.`status`, p.create_time, p.update_time, p.ban_reason,p.img_list imgStr,
+                u.name username,t.name tabName,
+               (select count(id) from t_comments where post_id = p.id) commentNum,
+               (select count(id) from t_post_likes where post_id = p.id) likeNum,
+               (select count(id) from t_post_favorites where post_id = p.id) favoriteNum
+        from t_post p
+        join t_user u on p.user_id = u.id
+        join t_tab t on p.tab_id = t.id
+        <where>
+            <if test="title != null and title != ''">
+                and p.title like concat('%',#{title},'%')
+            </if>
+            <if test="username != null and username != ''">
+                and u.name like concat('%',#{username},'%')
+            </if>
+            <if test="tabName != null and tabName != ''">
+                and t.name = #{tabName}
+            </if>
+            <if test="description != null and description != ''">
+                and p.description like concat('%',#{description},'%')
+            </if>
+        </where>
+        order by p.create_time desc
+    </select>
+</mapper>
