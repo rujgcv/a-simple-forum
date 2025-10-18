@@ -26,4 +26,10 @@ public interface TabService {
 
     // 批量删除贴吧
     Result delBatch(List<Long> ids);
+
+    // 远程搜索贴吧名
+    Result queryTabName(String tabName);
+
+    // 贴吧名查重
+    Result checkName(String tabName);
 }

@@ -24,7 +24,7 @@ public class Post implements Serializable {
     private String description;
     private boolean status;
     private String banReason;
-    private List<String> imgList;
+    private String imgList;
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")

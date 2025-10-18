@@ -12,12 +12,12 @@ public class OSSConfig {
     private static String accessKeySecret;
     private static String bucketName;
 
-    @Value("${fufu.alioss.domain}")
+    @Value("${aliyun.oss.domain}")
     public void setDomain(String domain) {
         OSSConfig.domain = domain;
     }
 
-    @Value("${fufu.alioss.endpoint}")
+    @Value("${aliyun.oss.endpoint}")
     public void setEndpoint(String endpoint) {
         OSSConfig.endpoint = endpoint;
     }
@@ -32,7 +32,7 @@ public class OSSConfig {
         OSSConfig.accessKeySecret = accessKeySecret;
     }
 
-    @Value("${fufu.alioss.bucketName}")
+    @Value("${aliyun.oss.bucketName}")
     public void setBucketName(String bucketName) {
         OSSConfig.bucketName = bucketName;
     }

@@ -14,13 +14,23 @@ spring:
       enabled: true          # 启用文件上传
       max-file-size: 10MB    # 单个文件大小限制
       max-request-size: 10MB # 总请求大小限制
-#    alioss:
-#      endpoint: ${fufu.alioss.endpoint}
-#      buck-name: ${fufu.alioss.bucketName}
-#  redis:
-#    host: ${fufu.redis.host}
-#    port: ${fufu.redis.port}
-#    database: ${fufu.redis.database}
+    redis:
+      host: ${fufu.redis.host}
+      port: ${fufu.redis.port}
+      database: ${fufu.redis.database}
+aliyun:
+  accessKeyId: ${fufu.alioss.accessKeyId}
+  accessKeySecret: ${fufu.alioss.accessKeySecret}
+  oss:
+    domain: ${fufu.alioss.domain}
+    endpoint: ${fufu.alioss.endpoint}
+    bucketName: ${fufu.alioss.bucketName}
+  sms:
+    endpoint: ${fufu.sms.endpoint}
+    schemeName: ${fufu.sms.schemeName}
+    signName: ${fufu.sms.signName}
+    templateCode: ${fufu.sms.templateCode}
+
 
 mybatis:
   #mapper配置文件

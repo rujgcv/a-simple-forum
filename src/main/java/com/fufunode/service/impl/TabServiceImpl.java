@@ -4,6 +4,7 @@ import com.fufunode.constant.MessageConstant;
 import com.fufunode.mapper.TabMapper;
 import com.fufunode.pojo.dto.TabDTO;
 import com.fufunode.pojo.dto.TabPageQueryDTO;
+import com.fufunode.pojo.entity.QueryTabName;
 import com.fufunode.pojo.entity.Tab;
 import com.fufunode.pojo.entity.TabDetail;
 import com.fufunode.pojo.entity.User;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TabServiceImpl implements TabService {
@@ -125,6 +127,23 @@ public class TabServiceImpl implements TabService {
         }
         if(!imgUrl.isEmpty()) UploadUtil.deleteBatch(imgUrl);
         tabMapper.delBatch(ids);
+        return Result.success();
+    }
+
+    @Override
+    public Result queryTabName(String tabName) {
+        List<String> names = tabMapper.queryTabName(tabName);
+
+        List<QueryTabName> data = names.stream()
+                                    .map(QueryTabName::new)
+                                    .collect(Collectors.toList());
+        return Result.success(data);
+    }
+
+    @Override
+    public Result checkName(String tabName) {
+        Tab tab = tabMapper.getTabByName(tabName);
+        if(tab != null) return Result.error(MessageConstant.TAB_OCCUPIED);
         return Result.success();
     }
 }

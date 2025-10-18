@@ -20,6 +20,7 @@ import com.github.pagehelper.PageHelper;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisTemplate<String,String> redisTemplate;
 
     @Override
     public PageResult pageQuery(UserPageQueryDTO userPageQueryDTO) {
@@ -63,33 +67,47 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Result add(UserDTO userDTO,Role role) {
 
-        // 电话不能重复
-        if(userDTO.getPhone() != null && userDTO.getPhone() != ""){
-            String phone = userDTO.getPhone().trim();
-            if (!phone.matches("^1[3-9]\\d{9}$")) {
-                return Result.error(MessageConstant.PHONE_INVALID);
-            }
-            if (userMapper.getUserByPhone(null,phone) != null) {
-                return Result.error(MessageConstant.ACCOUNT_EXISTS);
-            }
+        // 电话不能为空
+        if (StringUtils.isBlank(userDTO.getPhone())) {
+            return Result.error(MessageConstant.Phone_IS_NULL);
         }
 
-        // admin端新增用户默认密码
-        if(userDTO.getPassword() == "" || userDTO.getPassword() == null){
+        String phone = userDTO.getPhone().trim();
+        // 验证手机号合法
+        if (!phone.matches("^1[3-9]\\d{9}$")) {
+            return Result.error(MessageConstant.PHONE_INVALID);
+        }
+        // 手机号去重
+        if (userMapper.getUserByPhone(null,phone) != null) {
+            return Result.error(MessageConstant.ACCOUNT_EXISTS);
+        }
+
+        if("user".equals(userDTO.getSource())){
+            // 客户端手机短信验证不为空
+            if(StringUtils.isBlank(userDTO.getCode())) return Result.error(MessageConstant.PHONE_CODE_IS_NULL);
+            // 验证码长度不合法
+            if(userDTO.getCode().length() != 6) return Result.error(MessageConstant.PHONE_CODE_INVALID);
+
+            // 客户端核对手机短信验证码
+            String key = "sms:phone:" + phone;
+            String code = redisTemplate.opsForValue().get(key);
+            if (code == null) return Result.error(MessageConstant.SMSCODE_EXPIRED); // 验证码已过期
+            if(!code.equals(userDTO.getCode())) return Result.error(MessageConstant.SMSCODE_NOT_MATCH);
+            redisTemplate.delete(key);
+        }else {
+            // admin端新增用户默认密码
             userDTO.setPassword(PasswordConstant.DEFAULT_PASSWORD);
         }
 
         // name不为空
-        if(userDTO.getName() == null || userDTO.getName() == "") return Result.error(MessageConstant.USERNAME_IS_NULL);
+        if(StringUtils.isBlank(userDTO.getName())) return Result.error(MessageConstant.USERNAME_IS_NULL);
         // 昵称不得超过10字
         if(userDTO.getName().length() >= 10) return Result.error(MessageConstant.NAME_TOO_LONG);
-        // 密码不为空
-        if(userDTO.getPassword() == null || userDTO.getPassword() == "") return Result.error(MessageConstant.PASSWORD_IS_NULL);
-        // 密码长度规定
-        if(userDTO.getPassword().length()>20 || userDTO.getPassword().length()<6) return Result.error(MessageConstant.PASSWORD_INVAILD);
-
         // 用户已存在(name重复)
         if(userMapper.getUserByName(userDTO.getName()) != null) return Result.error(MessageConstant.Name_OCCUPIED);
+
+        // 密码长度规定
+        if(userDTO.getPassword().length()>20 || userDTO.getPassword().length()<6) return Result.error(MessageConstant.PASSWORD_INVAILD);
 
         User user = new User();
         BeanUtils.copyProperties(userDTO,user);
@@ -112,15 +130,15 @@ public class UserServiceImpl implements UserService {
         if(userDTO.getName().length() >= 10) return Result.error(MessageConstant.NAME_TOO_LONG);
 
         // 电话不能重复
-        if(userDTO.getPhone() != null && userDTO.getPhone() != ""){
-            String phone = userDTO.getPhone().trim();
-            Long id = userDTO.getId();
-            if (!phone.matches("^1[3-9]\\d{9}$")) {
-                return Result.error(MessageConstant.PHONE_INVALID);
-            }
-            if (userMapper.getUserByPhone(id,phone) != null) {
-                return Result.error(MessageConstant.ACCOUNT_EXISTS);
-            }
+        if(userDTO.getPhone() == null || userDTO.getPhone() == "") return Result.error(MessageConstant.Phone_IS_NULL);
+
+        String phone = userDTO.getPhone().trim();
+        Long id = userDTO.getId();
+        if (!phone.matches("^1[3-9]\\d{9}$")) {
+            return Result.error(MessageConstant.PHONE_INVALID);
+        }
+        if (userMapper.getUserByPhone(id,phone) != null) {
+            return Result.error(MessageConstant.ACCOUNT_EXISTS);
         }
 
         User userByName = userMapper.getUserByName(userDTO.getName());
@@ -178,6 +196,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isBlank(userLoginDTO.getPassword())) {
             return Result.error(MessageConstant.PASSWORD_IS_NULL);
         }
+
         if (userLoginDTO.getRole() == null) {
             return Result.error(MessageConstant.Role_INVALID);
         }

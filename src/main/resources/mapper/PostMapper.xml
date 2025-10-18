@@ -29,4 +29,18 @@
         </where>
         order by p.create_time desc
     </select>
+    <select id="getImgs" resultType="java.lang.String">
+        select img_list from t_post
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+    <delete id="delBatch">
+        delete from t_post
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

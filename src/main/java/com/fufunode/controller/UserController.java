@@ -37,10 +37,19 @@ public class UserController {
         return userService.statusChang(id);
     }
 
-    // 新增用户
+    // 新增用户(admin端)
     @PostMapping("/add")
     public Result add(@RequestBody UserDTO userDTO){
-        log.info("新增用户:{}",userDTO);
+        log.info("新增用户(admin端):{}",userDTO);
+        userDTO.setSource("admin");
+        return userService.add(userDTO,Role.user);
+    }
+
+    // 新增用户(user端)
+    @PostMapping("/register")
+    public Result register(@RequestBody UserDTO userDTO){
+        log.info("新增用户(user端):{}",userDTO);
+        userDTO.setSource("user");
         return userService.add(userDTO,Role.user);
     }
 

@@ -26,6 +26,7 @@ public class User implements Serializable {
     private String phone;
     @JsonIgnore
     private String password;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Role role;
     private String avatarUrl;
     private boolean status;

@@ -57,4 +57,8 @@ public interface TabMapper {
 
     // 批量删除贴吧
     void delBatch(List<Long> ids);
+
+    // 模糊查询贴吧名称
+    @Select("select name from t_tab where name like concat('%',#{tabName},'%') limit 7")
+    List<String> queryTabName(String tabName);
 }

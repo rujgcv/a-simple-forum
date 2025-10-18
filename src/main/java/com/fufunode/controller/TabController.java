@@ -63,4 +63,18 @@ public class TabController {
         log.info("批量删除贴吧:{}",ids);
         return tabService.delBatch(ids);
     }
+
+    // 远程搜索贴吧名
+    @GetMapping("/queryTabName")
+    public Result queryTabName(@RequestParam String tabName){
+        log.info("远程搜索贴吧名:{}",tabName);
+        return tabService.queryTabName(tabName);
+    }
+
+    // 贴吧名查重
+    @GetMapping("/checkname")
+    public Result checkName(@RequestParam String tabName){
+        log.info("贴吧名查重:{}",tabName);
+        return tabService.checkName(tabName);
+    }
 }

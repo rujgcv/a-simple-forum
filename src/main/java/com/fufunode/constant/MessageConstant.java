@@ -4,6 +4,7 @@ package com.fufunode.constant;
 public class MessageConstant {
     public static final String PASSWORD_IS_NULL = "密码不能为空";
     public static final String USERNAME_IS_NULL = "用户名不能为空";
+    public static final String Phone_IS_NULL = "手机号不能为空";
     public static final String Role_INVALID = "请选择登录类型";
     public static final String Role_ERROR = "登录类型不匹配,请重试";
     public static final String ACCOUNT_EXISTS = "用户户已存在";
@@ -27,4 +28,9 @@ public class MessageConstant {
     public static final String UNKNOWN_ERROR = "未知错误";
     public static final String BANREASON_IS_NULL = "请填写禁用原因";
     public static final String BANREASON_TOO_LONG = "禁用理由不得超过50字";
+    public static final String DELETE_POST_IS_NULL = "删除贴子不能为空";
+    public static final String PHONE_CODE_IS_NULL = "验证码不能为空";
+    public static final String PHONE_CODE_INVALID = "验证码格式不合法";
+    public static final String SMSCODE_NOT_MATCH = "验证码不一致";
+    public static final String SMSCODE_EXPIRED = "验证码已过期";
 }

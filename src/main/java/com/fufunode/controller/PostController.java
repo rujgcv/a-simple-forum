@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/post")
 @Slf4j
@@ -30,5 +32,19 @@ public class PostController {
     public Result statusChange(@RequestBody PostStatusDTO postStatusDTO){
         log.info("状态启用、禁用:{}",postStatusDTO);
         return postService.statusChange(postStatusDTO);
+    }
+
+    // 删除贴子
+    @DeleteMapping("/{id}")
+    public Result del(@PathVariable("id") Long id){
+        log.info("删除贴子:{}",id);
+        return postService.del(id);
+    }
+
+    // 批量删除贴子
+    @PostMapping("/delBatch")
+    public Result delBatch(@RequestBody List<Long> ids){
+        log.info("批量删除贴子:{}",ids);
+        return postService.delBatch(ids);
     }
 }
