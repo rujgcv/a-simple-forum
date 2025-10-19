@@ -1,5 +1,6 @@
 package com.fufunode.controller;
 
+import com.fufunode.annotation.RequireAdmin;
 import com.fufunode.pojo.dto.BannerDTO;
 import com.fufunode.result.Result;
 import com.fufunode.service.BannerService;
@@ -24,6 +25,7 @@ public class BannerController {
 
     // 新增轮播图
     @PostMapping("/add")
+    @RequireAdmin
     public Result add(@RequestBody BannerDTO bannerDTO){
         log.info("新增轮播图:{}",bannerDTO);
         return bannerService.add(bannerDTO);
@@ -31,6 +33,7 @@ public class BannerController {
 
     // 删除轮播图
     @DeleteMapping("/{id}")
+    @RequireAdmin
     public Result del(@PathVariable("id") Long id){
         log.info("删除轮播图:{}",id);
         return bannerService.del(id);
@@ -38,6 +41,7 @@ public class BannerController {
 
     // 修改轮播图
     @PostMapping("/modify")
+    @RequireAdmin
     public Result modify(@RequestBody BannerDTO bannerDTO){
         log.info("修改轮播图:{}",bannerDTO);
         return bannerService.modify(bannerDTO);

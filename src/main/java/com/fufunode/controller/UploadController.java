@@ -1,5 +1,6 @@
 package com.fufunode.controller;
 
+import com.fufunode.annotation.RequireAdmin;
 import com.fufunode.pojo.dto.UploadDTO;
 import com.fufunode.result.Result;
 import com.fufunode.service.UploadService;
@@ -42,6 +43,7 @@ public class UploadController {
 
     // 上传轮播图
     @PostMapping("/banner")
+    @RequireAdmin
     public Result uploadBanner(@RequestParam("id") Long bannerId,
                                @RequestParam("file") MultipartFile file){
         UploadDTO uploadDTO = UploadDTO.builder()

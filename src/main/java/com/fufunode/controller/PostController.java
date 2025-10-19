@@ -1,5 +1,6 @@
 package com.fufunode.controller;
 
+import com.fufunode.annotation.RequireAdmin;
 import com.fufunode.pojo.dto.PostPageQueryDTO;
 import com.fufunode.pojo.dto.PostStatusDTO;
 import com.fufunode.result.PageResult;
@@ -29,6 +30,7 @@ public class PostController {
 
     // 状态启用、禁用
     @PutMapping("/status")
+    @RequireAdmin
     public Result statusChange(@RequestBody PostStatusDTO postStatusDTO){
         log.info("状态启用、禁用:{}",postStatusDTO);
         return postService.statusChange(postStatusDTO);
@@ -43,6 +45,7 @@ public class PostController {
 
     // 批量删除贴子
     @PostMapping("/delBatch")
+    @RequireAdmin
     public Result delBatch(@RequestBody List<Long> ids){
         log.info("批量删除贴子:{}",ids);
         return postService.delBatch(ids);

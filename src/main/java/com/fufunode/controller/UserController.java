@@ -1,5 +1,6 @@
 package com.fufunode.controller;
 
+import com.fufunode.annotation.RequireAdmin;
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;
 import com.fufunode.pojo.dto.UserLoginDTO;
@@ -23,6 +24,7 @@ public class UserController {
 
     // 分页查询
     @GetMapping("/page")
+    @RequireAdmin
     public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
         log.info("用户分页查询:{}",userPageQueryDTO);
         userPageQueryDTO.setRole(Role.user);
@@ -32,6 +34,7 @@ public class UserController {
 
     // 用户启用、禁用
     @PutMapping("/status/{id}")
+    @RequireAdmin
     public Result statusChang(@PathVariable("id") Long id){
         log.info("用户启用、禁用:{}",id);
         return userService.statusChang(id);
@@ -39,6 +42,7 @@ public class UserController {
 
     // 新增用户(admin端)
     @PostMapping("/add")
+    @RequireAdmin
     public Result add(@RequestBody UserDTO userDTO){
         log.info("新增用户(admin端):{}",userDTO);
         userDTO.setSource("admin");
@@ -69,6 +73,7 @@ public class UserController {
 
     // 批量删除用户
     @PostMapping("/delBatch")
+    @RequireAdmin
     public Result batchDeleteUser(@RequestBody List<Long> ids) {
         log.info("批量删除用户:{}",ids);
         return userService.delBatch(ids);

@@ -1,5 +1,6 @@
 package com.fufunode.config;
 
+import com.fufunode.interceptor.AdminAuthInterceptor;
 import com.fufunode.interceptor.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,11 +19,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private LoginInterceptor jwtInterceptor;
 
+    @Autowired
+    private AdminAuthInterceptor adminAuthInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/user/login", "/user/register","/upload/**","/sms/**");
+
+        registry.addInterceptor(adminAuthInterceptor)
+                .addPathPatterns("/**");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.fufunode.controller;
 
+import com.fufunode.annotation.RequireAdmin;
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.UserDTO;
 import com.fufunode.pojo.dto.UserPageQueryDTO;
@@ -20,6 +21,7 @@ public class AdminController {
 
     // 分页查询
     @GetMapping("/page")
+    @RequireAdmin
     public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
         log.info("用户分页查询:{}",userPageQueryDTO);
         userPageQueryDTO.setRole(Role.admin);
@@ -29,6 +31,7 @@ public class AdminController {
 
     // 新增管理员
     @PostMapping("/add")
+    @RequireAdmin
     public Result add(@RequestBody UserDTO userDTO){
         log.info("新增用户:{}",userDTO);
         return userService.add(userDTO,Role.admin);

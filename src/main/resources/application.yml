@@ -31,6 +31,8 @@ aliyun:
     signName: ${fufu.sms.signName}
     templateCode: ${fufu.sms.templateCode}
 
+jwt:
+  secretKey: ${fufu.jwt.secretKey}
 
 mybatis:
   #mapper配置文件

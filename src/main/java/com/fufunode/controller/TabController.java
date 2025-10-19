@@ -1,5 +1,6 @@
 package com.fufunode.controller;
 
+import com.fufunode.annotation.RequireAdmin;
 import com.fufunode.enums.Role;
 import com.fufunode.pojo.dto.TabDTO;
 import com.fufunode.pojo.dto.TabPageQueryDTO;
@@ -24,13 +25,14 @@ public class TabController {
     // 分页查询
     @GetMapping("/page")
     public Result<PageResult> page(TabPageQueryDTO tabPageQueryDTO){
-        log.info("用户分页查询:{}",tabPageQueryDTO);
+        log.info("贴吧分页查询:{}",tabPageQueryDTO);
         PageResult pageResult = tabService.pageQuery(tabPageQueryDTO);
         return Result.success(pageResult);
     }
 
     // 贴吧禁用、启用
     @PutMapping("/status/{id}")
+    @RequireAdmin
     public Result statusChang(@PathVariable("id") Long id){
         log.info("贴吧启用、禁用:{}",id);
         return tabService.statusChange(id);
@@ -38,6 +40,7 @@ public class TabController {
 
     // 新增贴吧(system)
     @PostMapping("/add/system")
+    @RequireAdmin
     public Result addFromSysem(@RequestBody TabDTO tabDTO){
         log.info("新增贴吧(system):{}",tabDTO);
         return tabService.addTabFromSystem(tabDTO);
@@ -45,6 +48,7 @@ public class TabController {
 
     // 修改贴吧
     @PostMapping("/modify")
+    @RequireAdmin
     public Result modify(@RequestBody TabDTO tabDTO){
         log.info("修改贴吧:{}",tabDTO);
         return tabService.modify(tabDTO);
@@ -52,6 +56,7 @@ public class TabController {
 
     // 删除贴吧
     @DeleteMapping("/{id}")
+    @RequireAdmin
     public Result del(@PathVariable("id") Long id){
         log.info("删除贴吧:{}",id);
         return tabService.del(id);
@@ -59,6 +64,7 @@ public class TabController {
 
     // 批量删除贴吧
     @PostMapping("/delBatch")
+    @RequireAdmin
     public Result delBatch(@RequestBody List<Long> ids){
         log.info("批量删除贴吧:{}",ids);
         return tabService.delBatch(ids);

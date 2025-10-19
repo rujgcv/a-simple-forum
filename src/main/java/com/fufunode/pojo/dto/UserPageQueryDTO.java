@@ -16,7 +16,7 @@ public class UserPageQueryDTO implements Serializable {
     //电话
     private String phone;
 
-    //用户权限
+    //要查找的用户权限
     private Role role;
 
     //页码
