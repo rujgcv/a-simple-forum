@@ -14,6 +14,7 @@ import com.fufunode.service.TabService;
 import com.fufunode.utils.UploadUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class TabServiceImpl implements TabService {
 
     @Autowired
@@ -78,15 +80,16 @@ public class TabServiceImpl implements TabService {
     @Override
     @Transactional
     public Result modify(TabDTO tabDTO) {
-        if(tabDTO.getName() == "" || tabDTO.getName() == null) return Result.error(MessageConstant.TAB_NAME_IS_NULL);
+        if(tabDTO.getName() == null || tabDTO.getName().trim().isEmpty()) return Result.error(MessageConstant.TAB_NAME_IS_NULL);
         if(tabDTO.getTypeId() == 0) return Result.error(MessageConstant.TAB_TYPE_IS_NULL);
         if(tabDTO.getName().length() > 20) return Result.error(MessageConstant.TAB_NAME_TOO_LONG);
 
+        Tab currentTab = tabMapper.getTabById(tabDTO.getId());
+        if(currentTab == null) return Result.error(MessageConstant.TAB_NON_EXIST);
+
         // 昵称不能重复
         Tab tabByName = tabMapper.getTabByName(tabDTO.getName());
-        if(tabByName != null && !tabByName.getName().equals(tabMapper.getTabById(tabDTO.getId()).getName())) return Result.error(MessageConstant.TAB_OCCUPIED);
-
-        // 如果修改图片，先删除之前的图片
+        if(tabByName != null && !tabByName.getId().equals(tabDTO.getId())) return Result.error(MessageConstant.TAB_OCCUPIED);
 
         Tab tab = Tab.builder()
                 .id(tabDTO.getId())
@@ -104,29 +107,46 @@ public class TabServiceImpl implements TabService {
     @Override
     public Result del(Long id) {
         Tab t = tabMapper.getTabById(id);
+        if (t == null) {
+            return Result.error(MessageConstant.DELETE_TAB_IS_NULL);
+        }
+
+        if (tabMapper.delById(id) == 0) {
+            return Result.error(MessageConstant.DELETE_TAB_ERR);
+        }
+
         String imgUrl = t.getImgUrl();
         if(imgUrl != null && !imgUrl.isEmpty()){
             if(!UploadUtil.delete(imgUrl)){
-                return Result.error(MessageConstant.IMG_DELETE_ERROR);
+                log.error("删除贴吧图片失败,id:{},file:{}",id,imgUrl);
             }
         }
-        tabMapper.delById(id);
+
         return Result.success();
     }
 
     @Override
     public Result delBatch(List<Long> ids) {
-        if(ids.size() == 0) return Result.error(MessageConstant.DELETE_TAB_IS_NULL);
+        if(ids == null || ids.isEmpty()) return Result.error(MessageConstant.DELETE_TAB_IS_NULL);
 
-        List<String> imgUrl = new ArrayList<>();
+        List<String> imgList = new ArrayList<>();
         List<String> imgs = tabMapper.getImgs(ids);
-        for(String img : imgs){
-            if(img != null && !img.isEmpty()){
-                imgUrl.add(img);
+        if(imgs != null){
+            for(String img : imgs){
+                if(img != null && !img.isEmpty()){
+                    imgList.add(img);
+                }
             }
         }
-        if(!imgUrl.isEmpty()) UploadUtil.deleteBatch(imgUrl);
-        tabMapper.delBatch(ids);
+
+        if(tabMapper.delBatch(ids) != ids.size()) return Result.error(MessageConstant.DELETE_TAB_ERR);
+
+        if (!imgList.isEmpty()) {
+            if (!UploadUtil.deleteBatch(imgList)) {
+                log.warn("删除贴吧图片失败, ids: {}, files: {}", ids, imgList);  // 改为warn
+            }
+        }
+
         return Result.success();
     }
 

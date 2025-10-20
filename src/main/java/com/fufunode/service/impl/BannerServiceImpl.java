@@ -8,6 +8,7 @@ import com.fufunode.result.Result;
 import com.fufunode.service.BannerService;
 import com.fufunode.service.UploadService;
 import com.fufunode.utils.UploadUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Slf4j
 public class BannerServiceImpl implements BannerService {
 
     @Autowired
@@ -42,13 +44,21 @@ public class BannerServiceImpl implements BannerService {
     @Transactional
     public Result del(Long id) {
         Banner banner = bannerMapper.getById(id);
+        if(banner == null){
+            return Result.error(MessageConstant.BANNER_IS_NULL);
+        }
+
+        if(bannerMapper.del(id) == 0){
+            return Result.error(MessageConstant.DELETE_BANNER_ERR);
+        }
+
         String imgUrl = banner.getImgUrl();
         if(imgUrl != null && !imgUrl.isEmpty()){
             if(!UploadUtil.delete(imgUrl)){
-                return Result.error(MessageConstant.IMG_DELETE_ERROR);
+                log.error("删除轮播图图片失败,id:{},file:{}",id,imgUrl);
             }
         }
-        bannerMapper.del(id);
+
         return Result.success();
     }
 

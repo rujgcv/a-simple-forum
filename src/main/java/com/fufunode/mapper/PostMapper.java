@@ -28,11 +28,11 @@ public interface PostMapper {
 
     // 删除贴子
     @Delete("delete from t_post where id = #{id}")
-    void del(Long id);
+    Integer del(Long id);
 
     // 根据ids获取多张图片
     List<String> getImgs(List<Long> ids);
 
     // 批量删除贴子
-    void delBatch(List<Long> ids);
+    Integer delBatch(List<Long> ids);
 }

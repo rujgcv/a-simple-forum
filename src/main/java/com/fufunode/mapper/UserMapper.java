@@ -47,10 +47,10 @@ public interface UserMapper {
 
     // 删除用户
     @Delete("delete from t_user where id = #{id}")
-    void delById(Long id);
+    Integer delById(Long id);
 
     // 批量删除用户
-    void delBatch(List<Long> ids);
+    Integer delBatch(List<Long> ids);
 
     // 根据name获取用户
     @Select("select * from t_user where name = #{name}")

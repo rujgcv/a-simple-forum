@@ -5,6 +5,7 @@ import com.aliyun.oss.OSSBuilder;
 import com.aliyun.oss.OSSClientBuilder;
 import com.fufunode.config.OSSConfig;
 import com.fufunode.exception.FileUploadException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.system.ApplicationHome;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 public class UploadUtil {
 
     // 本地存储绝对路径（注意结尾带斜杠）
@@ -103,6 +105,7 @@ public class UploadUtil {
         return true;
     }*/
     public static boolean delete(String filepath){
+        if(filepath == null || filepath.isEmpty()) return true;
         String absolutePath = convertUrlToAbsolutePath(filepath);
 
         File file = new File(absolutePath);
@@ -140,9 +143,14 @@ public class UploadUtil {
         return true;
     }*/
     public static boolean deleteBatch(List<String> filepaths){
+        if (filepaths == null || filepaths.isEmpty()) {
+            return true;
+        }
+
         boolean success = true;
         for (String path : filepaths) {
             if (!delete(path)) {
+                log.warn("文件删除失败: {}", path);
                 success = false;
             }
         }

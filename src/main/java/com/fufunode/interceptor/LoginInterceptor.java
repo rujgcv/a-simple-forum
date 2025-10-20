@@ -23,12 +23,18 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
         Long userId = JwtUtil.parseTokenToUserId(token);
-        if(userId != null) BaseContext.setCurrentId(userId);
+        String userRole = JwtUtil.parseTokenToRole(token);
+        if(userId != null) {
+            BaseContext.setCurrentId(userId);
+        }
+        if(userRole != null){
+            BaseContext.setCurrentRole(userRole);
+        }
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        BaseContext.removeCurrentId(); // 请求结束后清理 ThreadLocal
+        BaseContext.removeCurrent(); // 请求结束后清理 ThreadLocal
     }
 }

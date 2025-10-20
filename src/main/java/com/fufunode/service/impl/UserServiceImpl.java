@@ -18,6 +18,7 @@ import com.fufunode.utils.UploadUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.micrometer.common.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -132,6 +134,13 @@ public class UserServiceImpl implements UserService {
         // 电话不能重复
         if(userDTO.getPhone() == null || userDTO.getPhone() == "") return Result.error(MessageConstant.Phone_IS_NULL);
 
+        Long currentId = BaseContext.getCurrentId();
+        String currentRole = BaseContext.getCurrentRole();
+        // 管理员可以修改任何用户，普通用户只能修改自己
+        if(!"admin".equals(currentRole) && !userDTO.getId().equals(currentId)){
+            return Result.error(MessageConstant.NO_PERMISSION);
+        }
+
         String phone = userDTO.getPhone().trim();
         Long id = userDTO.getId();
         if (!phone.matches("^1[3-9]\\d{9}$")) {
@@ -159,21 +168,37 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Result delById(Long id) {
+
+        Long currentId = BaseContext.getCurrentId();
+        String currentRole = BaseContext.getCurrentRole();
+        // 管理员可以删除任何用户，普通用户只能删除自己
+        if(!"admin".equals(currentRole) && !id.equals(currentId)){
+            return Result.error(MessageConstant.NO_PERMISSION);
+        }
+
         User u = userMapper.getUserById(id);
+        if (u == null) {
+            return Result.error("用户不存在");
+        }
+
         String avatarUrl = u.getAvatarUrl();
+
+        if(userMapper.delById(id) == 0){
+            return Result.error(MessageConstant.DELETE_USER_ERR);
+        }
+
         if(avatarUrl != null && !avatarUrl.isEmpty()){
             if(!UploadUtil.delete(avatarUrl)){
-                return Result.error(MessageConstant.IMG_DELETE_ERROR);
+                log.error("删除用户头像文件失败，用户ID: {}, 文件: {}", id, avatarUrl);
             }
         }
-        userMapper.delById(id);
         return Result.success();
     }
 
     @Override
     @Transactional
     public Result delBatch(List<Long> ids) {
-        if(ids.size() == 0) return Result.error(MessageConstant.DELETE_USER_IS_NULL);
+        if(ids == null || ids.isEmpty()) return Result.error(MessageConstant.DELETE_USER_IS_NULL);
 
         List<String> imgUrl = new ArrayList<>();
         List<String> avatars = userMapper.getAvatars(ids);
@@ -182,8 +207,12 @@ public class UserServiceImpl implements UserService {
                 imgUrl.add(avatar);
             }
         }
+
+        if(userMapper.delBatch(ids) != ids.size()){
+            return Result.error(MessageConstant.DELETE_USER_ERR);
+        }
+
         if(!imgUrl.isEmpty()) UploadUtil.deleteBatch(imgUrl);
-        userMapper.delBatch(ids);
         return Result.success();
     }
 
@@ -221,9 +250,6 @@ public class UserServiceImpl implements UserService {
         if(!user.isStatus()) {
             return Result.error(MessageConstant.USER_DISABLE);
         }
-
-        // 存储id到线程
-        BaseContext.setCurrentId(user.getId());
 
         // 生成Token
         String token = JwtUtil.getToken(user.getId(),user.getName(), user.getRole().name());

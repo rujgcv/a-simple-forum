@@ -1,6 +1,7 @@
 package com.fufunode.interceptor;
 
 import com.fufunode.annotation.RequireAdmin;
+import com.fufunode.context.BaseContext;
 import com.fufunode.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,9 +32,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
 
     private boolean checkAdminPermission(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String tokenHeader = request.getHeader("Authorization");
-        String token = tokenHeader.substring(7);
-        String role = JwtUtil.parseTokenToRole(token);
+        String role = BaseContext.getCurrentRole();
 
         if(!"admin".equals(role)){
             response.setStatus(403);

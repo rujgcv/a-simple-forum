@@ -50,13 +50,13 @@ public interface TabMapper {
 
     // 根据id删除贴吧
     @Delete("delete from t_tab where id = #{id}")
-    void delById(Long id);
+    Integer delById(Long id);
 
     // 根据一组id获取图片路径
     List<String> getImgs(List<Long> ids);
 
     // 批量删除贴吧
-    void delBatch(List<Long> ids);
+    Integer delBatch(List<Long> ids);
 
     // 模糊查询贴吧名称
     @Select("select name from t_tab where name like concat('%',#{tabName},'%') limit 7")

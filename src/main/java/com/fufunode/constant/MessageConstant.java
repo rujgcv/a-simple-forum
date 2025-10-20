@@ -7,7 +7,7 @@ public class MessageConstant {
     public static final String Phone_IS_NULL = "手机号不能为空";
     public static final String Role_INVALID = "请选择登录类型";
     public static final String Role_ERROR = "登录类型不匹配,请重试";
-    public static final String ACCOUNT_EXISTS = "用户户已存在";
+    public static final String ACCOUNT_EXISTS = "用户已存在";
     public static final String ACCOUNT_NOT_EXISTS = "用户不存在";
     public static final String PHONE_INVALID = "手机号不合法";
     public static final String UPLOAD_FAILED = "上传失败";
@@ -33,4 +33,11 @@ public class MessageConstant {
     public static final String PHONE_CODE_INVALID = "验证码格式不合法";
     public static final String SMSCODE_NOT_MATCH = "验证码不一致";
     public static final String SMSCODE_EXPIRED = "验证码已过期";
+    public static final String NO_PERMISSION = "无权限";
+    public static final String DELETE_USER_ERR = "删除用户失败";
+    public static final String DELETE_POST_ERR = "删除贴子失败";
+    public static final String DELETE_TAB_ERR = "删除贴吧失败";
+    public static final String TAB_NON_EXIST = "贴吧不存在";
+    public static final String BANNER_IS_NULL = "轮播图不能为空";
+    public static final String DELETE_BANNER_ERR = "删除轮播图失败";
 }

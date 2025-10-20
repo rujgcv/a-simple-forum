@@ -21,7 +21,7 @@ public interface BannerMapper {
 
     // 删除轮播图
     @Delete("delete from t_banner where id = #{id}")
-    void del(Long id);
+    Integer del(Long id);
 
     // 修改轮播图
     @Update("update t_banner set link = #{link} where id = #{id}")

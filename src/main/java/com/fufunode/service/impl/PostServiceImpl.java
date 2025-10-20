@@ -1,6 +1,7 @@
 package com.fufunode.service.impl;
 
 import com.fufunode.constant.MessageConstant;
+import com.fufunode.context.BaseContext;
 import com.fufunode.mapper.PostMapper;
 import com.fufunode.pojo.dto.PostPageQueryDTO;
 import com.fufunode.pojo.dto.PostStatusDTO;
@@ -12,6 +13,7 @@ import com.fufunode.service.PostService;
 import com.fufunode.utils.UploadUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PostServiceImpl implements PostService {
 
     @Autowired
@@ -82,27 +85,43 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public Result del(Long id) {
+
+        Long currentId = BaseContext.getCurrentId();
+        String currentRole = BaseContext.getCurrentRole();
+        if(!"admin".equals(currentRole) && !id.equals(currentId)){
+            return Result.error(MessageConstant.NO_PERMISSION);
+        }
+
         Post post = postMapper.getById(id);
+        if(post == null){
+            return Result.error(MessageConstant.DELETE_POST_IS_NULL);
+        }
+
+        List<String> imgList = new ArrayList<>();
         String imgStr = post.getImgList();
         // 删除贴子图片
         if(imgStr != null && !imgStr.isEmpty()){
-            List<String> imgList = Arrays.stream(imgStr
+            imgList = Arrays.stream(imgStr
                                         .split(";"))
                                         .filter(s -> !s.isEmpty())
                                         .toList();
-            if(!UploadUtil.deleteBatch(imgList)){
-                return Result.error(MessageConstant.IMG_DELETE_ERROR);
-            }
         }
         // 删除贴子
-        postMapper.del(id);
+        if(postMapper.del(id) == 0){
+            return Result.error(MessageConstant.DELETE_POST_ERR);
+        }
+
+        if(!UploadUtil.deleteBatch(imgList)){
+            log.error("删除贴子图片失败,id:{},file:{}",id,imgList);
+        }
+
         return Result.success();
     }
 
     @Override
     @Transactional
     public Result delBatch(List<Long> ids) {
-        if(ids.isEmpty()) return Result.error(MessageConstant.DELETE_POST_IS_NULL);
+        if(ids == null || ids.isEmpty()) return Result.error(MessageConstant.DELETE_POST_IS_NULL);
 
         List<String> imgList = new ArrayList<>();
         List<String> imgStrList = postMapper.getImgs(ids);
@@ -117,13 +136,18 @@ public class PostServiceImpl implements PostService {
                     imgList.addAll(imgs);
                 }
             }
-            if(!imgList.isEmpty() && !UploadUtil.deleteBatch(imgList)){
-                return Result.error(MessageConstant.IMG_DELETE_ERROR);
-            }
         }
 
         // 批量删除
-        postMapper.delBatch(ids);
+        if(postMapper.delBatch(ids) != ids.size()){
+            return Result.error(MessageConstant.DELETE_POST_ERR);
+        }
+
+        if(!imgList.isEmpty()){
+            if(!UploadUtil.deleteBatch(imgList)){
+                log.warn("删除贴子图片失败,id:{},file:{}",ids,imgList);
+            }
+        }
 
         return Result.success();
     }

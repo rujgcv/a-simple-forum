@@ -22,7 +22,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // 分页查询
+    // 分页查询(admin)
     @GetMapping("/page")
     @RequireAdmin
     public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
