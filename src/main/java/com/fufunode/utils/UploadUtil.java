@@ -149,7 +149,7 @@ public class UploadUtil {
 
         boolean success = true;
         for (String path : filepaths) {
-            if (!delete(path)) {
+            if (path != null && !path.isEmpty() && !delete(path)) {
                 log.warn("文件删除失败: {}", path);
                 success = false;
             }

@@ -10,7 +10,7 @@ import com.fufunode.result.Result;
 import java.util.List;
 
 public interface UserService {
-    // 用户分页查询
+    // 用户分页查询(admin)
     PageResult pageQuery(UserPageQueryDTO userPageQueryDTO);
 
     // 用户启用、禁用

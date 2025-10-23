@@ -31,6 +31,11 @@ aliyun:
     signName: ${fufu.sms.signName}
     templateCode: ${fufu.sms.templateCode}
 
+api:
+  box:
+    id: ${fufu.box.id}
+    key: ${fufu.box.key}
+
 jwt:
   secretKey: ${fufu.jwt.secretKey}
 

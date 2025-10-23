@@ -4,8 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.fufunode.mapper.PedingMapper">
-    <insert id="add">
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
         insert into t_tab_peding(name,type_id,description,user_id)
         values(#{name},#{typeId},#{description},#{userId})
     </insert>
+    <select id="pageQuery" resultType="com.fufunode.pojo.entity.PedingTab">
+        select id, name, create_time, ban_reason, type_id, description, img_url, user_id,
+               (select name from t_type where id = type_id) type
+        from t_tab_peding
+    </select>
 </mapper>

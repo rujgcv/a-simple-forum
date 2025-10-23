@@ -26,6 +26,9 @@
             <if test="description != null and description != ''">
                 and p.description like concat('%',#{description},'%')
             </if>
+            <if test="status != null and status != ''">
+                and t.status = #{status}
+            </if>
         </where>
         order by p.create_time desc
     </select>

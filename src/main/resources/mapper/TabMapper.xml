@@ -5,8 +5,8 @@
 
 <mapper namespace="com.fufunode.mapper.TabMapper">
     <insert id="add" useGeneratedKeys="true" keyProperty="id">
-        insert into t_tab(name,`status`,type_id,description)
-        values(#{name},#{status},#{typeId},#{description})
+        insert into t_tab(name,`status`,type_id,description,approve_id,approve_name)
+        values(#{name},#{status},#{typeId},#{description},#{approveId},#{approveName})
     </insert>
     <update id="modify" useGeneratedKeys="true" keyProperty="id">
         update t_tab
@@ -26,12 +26,18 @@
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
+            <if test="approveId != null and approveId != ''">
+                approve_id = #{approveId},
+            </if>
+            <if test="approveName != null and approveName != ''">
+                approve_name = #{approveName},
+            </if>
         </set>
         where id = #{id}
     </update>
     <select id="pageQuery" resultType="com.fufunode.pojo.entity.TabDetail">
         select t.id, t.name, t.create_time, t.status, t.type_id, type.name type,
-               t.description, t.img_url, t.update_time,
+               t.description, t.img_url, t.update_time,t.approve_id,t.approve_name,
                (select count(tab_id) from t_tab_focus where tab_id = t.id) focus_num,
                (select count(tab_id) from t_post where tab_id = t.id) post_num
         from t_tab t
@@ -46,6 +52,9 @@
             </if>
             <if test="typeId != null and typeId != ''">
                 and t.type_id = #{typeId}
+            </if>
+            <if test="status != null and status != ''">
+                and t.status = #{status}
             </if>
         </where>
         order by create_time desc

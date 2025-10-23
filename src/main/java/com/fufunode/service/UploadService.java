@@ -12,6 +12,9 @@ public interface UploadService {
     // 上传贴吧头像
     Result uploadTabImg(UploadDTO uploadDTO);
 
+    // 上传待审核贴吧头像
+    Result uploadPedingTabImg(UploadDTO uploadDTO);
+
     // 上传轮播图
     Result uploadBanner(UploadDTO uploadDTO);
 }

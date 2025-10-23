@@ -61,4 +61,7 @@ public interface TabMapper {
     // 模糊查询贴吧名称
     @Select("select name from t_tab where name like concat('%',#{tabName},'%') limit 7")
     List<String> queryTabName(String tabName);
+
+    @Select("select id from t_type where id = #{typeId}")
+    Integer verifyType(Long typeId);
 }

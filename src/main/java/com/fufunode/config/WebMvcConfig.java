@@ -26,10 +26,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/user/login", "/user/register","/upload/**","/sms/**");
+                .excludePathPatterns("/user/login", "/user/register","/upload/**","/sms/**","/captcha/**");
 
         registry.addInterceptor(adminAuthInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/user/login", "/user/register","/upload/**","/sms/**","/captcha/**");
     }
 
     @Override

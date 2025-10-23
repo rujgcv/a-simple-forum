@@ -15,6 +15,8 @@ public class TabPageQueryDTO implements Serializable {
 
     //类别id
     private Long typeId;
+    //贴子状态
+    private boolean status;
 
     //页码
     private int page;

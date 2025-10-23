@@ -41,6 +41,18 @@ public class UploadController {
         return uploadService.uploadTabImg(uploadDTO);
     }
 
+    // 上传待审核贴吧头像
+    @PostMapping("/pedingTabImg")
+    public Result uploadPedingTabImg(@RequestParam("tabId") Long tabId,
+                               @RequestParam("file") MultipartFile file) {
+        UploadDTO uploadDTO = UploadDTO.builder()
+                .id(tabId)
+                .file(file)
+                .build();
+        log.info("上传待审核贴吧头像: {}", uploadDTO);
+        return uploadService.uploadPedingTabImg(uploadDTO);
+    }
+
     // 上传轮播图
     @PostMapping("/banner")
     @RequireAdmin

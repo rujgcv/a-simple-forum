@@ -40,4 +40,8 @@ public class MessageConstant {
     public static final String TAB_NON_EXIST = "贴吧不存在";
     public static final String BANNER_IS_NULL = "轮播图不能为空";
     public static final String DELETE_BANNER_ERR = "删除轮播图失败";
+    public static final String TAB_TYPE_ERR = "类型不合法";
+    public static final String LOGIN_VERIFY_CODE_IS_NULL = "验证码不能为空";
+    public static final String LOGIN_VERIFY_CODE_OUT_TIME = "验证码已过期，请重试";
+    public static final String LOGIN_VERIFY_CODE_ERR = "验证码错误，请重试";
 }

@@ -12,6 +12,8 @@ public class PostPageQueryDTO {
     private String tabName;
     // 内容描述
     private String description;
+    // 状态
+    private boolean status;
     //页码
     private int page;
     //每页显示记录数

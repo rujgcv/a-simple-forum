@@ -12,6 +12,7 @@ import com.fufunode.pojo.entity.User;
 import com.fufunode.result.PageResult;
 import com.fufunode.result.Result;
 import com.fufunode.service.UserService;
+import com.fufunode.service.VerifyCodeService;
 import com.fufunode.utils.JwtUtil;
 import com.fufunode.utils.MD5Util;
 import com.fufunode.utils.UploadUtil;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -39,7 +41,13 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private VerifyCodeService verifyCodeService;
+
+    // 最大登陆失败次数，超过这个次数要校验验证码
+    public static final Integer MAX_LOGIN_FAIL_COUNT = 3;
 
     @Override
     public PageResult pageQuery(UserPageQueryDTO userPageQueryDTO) {
@@ -92,7 +100,7 @@ public class UserServiceImpl implements UserService {
 
             // 客户端核对手机短信验证码
             String key = "sms:phone:" + phone;
-            String code = redisTemplate.opsForValue().get(key);
+            String code = (String)redisTemplate.opsForValue().get(key);
             if (code == null) return Result.error(MessageConstant.SMSCODE_EXPIRED); // 验证码已过期
             if(!code.equals(userDTO.getCode())) return Result.error(MessageConstant.SMSCODE_NOT_MATCH);
             redisTemplate.delete(key);
@@ -230,6 +238,32 @@ public class UserServiceImpl implements UserService {
             return Result.error(MessageConstant.Role_INVALID);
         }
 
+        // 获取登录失败次数
+        String failCountId = "login:failcount:"+userLoginDTO.getName();
+        Integer failCount = (Integer)redisTemplate.opsForValue().get(failCountId);
+
+        // 登陆失败>3需要验证码
+        if(failCount != null && failCount > MAX_LOGIN_FAIL_COUNT){
+            if (StringUtils.isBlank(userLoginDTO.getCaptchaId()) || StringUtils.isBlank(userLoginDTO.getVerifyCode())) {
+                return Result.error(MessageConstant.LOGIN_VERIFY_CODE_IS_NULL);
+            }
+
+            String loginCaptchaId = "login:captcha:"+userLoginDTO.getCaptchaId();
+            String md5Key = (String)redisTemplate.opsForValue().get(loginCaptchaId);
+
+            if(md5Key == null){
+                return Result.error(MessageConstant.LOGIN_VERIFY_CODE_OUT_TIME);
+            }
+
+            // 校验验证码，卧槽，他妈的验证接口也要用第三方的，我他妈找半天🤡
+            if(!verifyCodeService.verifyCode(userLoginDTO.getVerifyCode(),md5Key)){
+                return Result.error(MessageConstant.LOGIN_VERIFY_CODE_ERR);
+            }
+
+            // 验证成功，删除redis验证码
+            redisTemplate.delete(loginCaptchaId);
+        }
+
         userLoginDTO.setPassword(MD5Util.md5(userLoginDTO.getPassword()));
         // 查询用户是否存在
         if(userMapper.loginValid(userLoginDTO) == null){
@@ -244,12 +278,18 @@ public class UserServiceImpl implements UserService {
         // 查询用户
         User user = userMapper.getUser(userLoginDTO);
         if(user == null){
+            // 登录失败次数过多加验证码
+            LoginFail(failCountId,failCount);
+
             return Result.error(MessageConstant.LOGIN_FAILED);
         }
         // 查询用户状态
         if(!user.isStatus()) {
             return Result.error(MessageConstant.USER_DISABLE);
         }
+
+        // 登录成功，删除redis验证码相关信息
+        redisTemplate.delete(failCountId);
 
         // 生成Token
         String token = JwtUtil.getToken(user.getId(),user.getName(), user.getRole().name());
@@ -259,6 +299,12 @@ public class UserServiceImpl implements UserService {
         data.put("token", token);
         data.put("user", user);
         return Result.success(data);
+    }
+
+    private void LoginFail(String failCountId,Integer failCount){
+        int newFailCount = (failCount == null ? 0 : failCount) + 1;
+
+        redisTemplate.opsForValue().set(failCountId,newFailCount,24, TimeUnit.HOURS);
     }
 
     @Override

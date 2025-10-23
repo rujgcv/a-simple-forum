@@ -1,13 +1,11 @@
 package com.fufunode.service.impl;
 
 import com.fufunode.constant.MessageConstant;
-import com.fufunode.mapper.BannerMapper;
-import com.fufunode.mapper.TabMapper;
-import com.fufunode.mapper.UploadMapper;
-import com.fufunode.mapper.UserMapper;
+import com.fufunode.mapper.*;
 import com.fufunode.pojo.dto.BannerDTO;
 import com.fufunode.pojo.dto.UploadDTO;
 import com.fufunode.pojo.entity.Banner;
+import com.fufunode.pojo.entity.PedingTab;
 import com.fufunode.pojo.entity.Tab;
 import com.fufunode.pojo.entity.User;
 import com.fufunode.result.Result;
@@ -28,6 +26,8 @@ public class UploadServiceImpl implements UploadService {
     private UserMapper userMapper;
     @Autowired
     private TabMapper tabMapper;
+    @Autowired
+    private PedingMapper pedingMapper;
     @Autowired
     private BannerMapper bannerMapper;
 
@@ -72,8 +72,30 @@ public class UploadServiceImpl implements UploadService {
         return Result.success();
     }
 
+    @Override
+    @Transactional
+    public Result uploadPedingTabImg(UploadDTO uploadDTO) {
+        String path = null;
+        Long id = uploadDTO.getId();
+        PedingTab pedingTab = pedingMapper.getById(id);
+        String oldImgUrl = pedingTab.getImgUrl();
+
+        path = UploadUtil.uploadImage(uploadDTO.getFile());
+        if (path == null || path.isEmpty()) {
+            return Result.error(MessageConstant.UPLOAD_FAILED);
+        }
+        uploadMapper.addPedingTabImg(id,path);
+
+        if(oldImgUrl != null && !oldImgUrl.isEmpty()){
+            UploadUtil.delete(oldImgUrl);
+        }
+
+        return Result.success();
+    }
+
     // 上传轮播图
     @Override
+    @Transactional
     public Result uploadBanner(UploadDTO uploadDTO) {
         String path = null;
         Long id = uploadDTO.getId();

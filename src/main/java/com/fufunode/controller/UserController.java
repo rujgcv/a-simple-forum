@@ -25,8 +25,8 @@ public class UserController {
     // 分页查询(admin)
     @GetMapping("/page")
     @RequireAdmin
-    public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
-        log.info("用户分页查询:{}",userPageQueryDTO);
+    public Result<PageResult> adminPage(UserPageQueryDTO userPageQueryDTO){
+        log.info("用户分页查询(admin):{}",userPageQueryDTO);
         userPageQueryDTO.setRole(Role.user);
         PageResult pageResult = userService.pageQuery(userPageQueryDTO);
         return Result.success(pageResult);

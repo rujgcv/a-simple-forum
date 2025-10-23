@@ -1,7 +1,9 @@
 package com.fufunode.service.impl;
 
 import com.fufunode.constant.MessageConstant;
+import com.fufunode.context.BaseContext;
 import com.fufunode.mapper.TabMapper;
+import com.fufunode.mapper.UserMapper;
 import com.fufunode.pojo.dto.TabDTO;
 import com.fufunode.pojo.dto.TabPageQueryDTO;
 import com.fufunode.pojo.entity.QueryTabName;
@@ -14,6 +16,7 @@ import com.fufunode.service.TabService;
 import com.fufunode.utils.UploadUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,8 @@ public class TabServiceImpl implements TabService {
 
     @Autowired
     private TabMapper tabMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public PageResult pageQuery(TabPageQueryDTO tabPageQueryDTO) {
@@ -39,7 +44,21 @@ public class TabServiceImpl implements TabService {
         // typeId==0 寻找全部类别
         if(tabPageQueryDTO.getTypeId() == 0) tabPageQueryDTO.setTypeId(null);
 
+        if(!"admin".equals(BaseContext.getCurrentRole())){
+            // 用户端只能查看启用状态的贴子
+            tabPageQueryDTO.setStatus(true);
+        }
+
         Page<TabDetail> page = tabMapper.pageQuery(tabPageQueryDTO);
+
+        if(!"admin".equals(BaseContext.getCurrentRole())){
+            // 用户端清空审批信息
+            page.getResult().forEach(tab -> {
+                tab.setApproveId(null);
+                tab.setApproveName(null);
+            });
+        }
+
         long total = page.getTotal();
         List<TabDetail> result = page.getResult();
 
@@ -62,15 +81,22 @@ public class TabServiceImpl implements TabService {
     @Override
     @Transactional
     public Result addTabFromSystem(TabDTO tabDTO) {
-        if(tabDTO.getName() == "" || tabDTO.getName() == null) return Result.error(MessageConstant.TAB_NAME_IS_NULL);
-        if(tabDTO.getTypeId() == 0) return Result.error(MessageConstant.TAB_TYPE_IS_NULL);
+        if(StringUtils.isBlank(tabDTO.getName())) return Result.error(MessageConstant.TAB_NAME_IS_NULL);
+        if(tabDTO.getTypeId() == null || tabDTO.getTypeId() <= 0) return Result.error(MessageConstant.TAB_TYPE_IS_NULL);
         if(tabDTO.getName().length() > 20) return Result.error(MessageConstant.TAB_NAME_TOO_LONG);
 
         if(tabMapper.getTabByName(tabDTO.getName()) != null) return Result.error(MessageConstant.TAB_OCCUPIED);
+        if(tabMapper.verifyType(tabDTO.getTypeId()) == null) return Result.error(MessageConstant.TAB_TYPE_ERR);
 
         Tab tab = new Tab();
         BeanUtils.copyProperties(tabDTO,tab);
         tab.setStatus(true);
+
+        //填入审批人id,name
+        Long currentId = BaseContext.getCurrentId();
+        String name = userMapper.getUserById(currentId).getName();
+        tab.setApproveId(currentId);
+        tab.setApproveName(name);
 
         tabMapper.add(tab);
 
@@ -80,8 +106,8 @@ public class TabServiceImpl implements TabService {
     @Override
     @Transactional
     public Result modify(TabDTO tabDTO) {
-        if(tabDTO.getName() == null || tabDTO.getName().trim().isEmpty()) return Result.error(MessageConstant.TAB_NAME_IS_NULL);
-        if(tabDTO.getTypeId() == 0) return Result.error(MessageConstant.TAB_TYPE_IS_NULL);
+        if(StringUtils.isBlank(tabDTO.getName())) return Result.error(MessageConstant.TAB_NAME_IS_NULL);
+        if(tabDTO.getTypeId() == null || tabDTO.getTypeId() <= 0) return Result.error(MessageConstant.TAB_TYPE_IS_NULL);
         if(tabDTO.getName().length() > 20) return Result.error(MessageConstant.TAB_NAME_TOO_LONG);
 
         Tab currentTab = tabMapper.getTabById(tabDTO.getId());
@@ -97,6 +123,8 @@ public class TabServiceImpl implements TabService {
                 .name(tabDTO.getName())
                 .description(tabDTO.getDescription())
                 .updateTime(LocalDateTime.now())
+                .approveId(BaseContext.getCurrentId())
+                .approveName(userMapper.getUserById(BaseContext.getCurrentId()).getName())
                 .build();
 
         tabMapper.modify(tab);

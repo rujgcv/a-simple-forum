@@ -28,4 +28,6 @@ public class Tab implements Serializable {
     private LocalDateTime createTime;
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
+    private Long approveId;
+    private String approveName;
 }

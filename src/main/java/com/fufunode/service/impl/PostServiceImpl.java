@@ -34,6 +34,11 @@ public class PostServiceImpl implements PostService {
     public PageResult pageQuery(PostPageQueryDTO postPageQueryDTO) {
         PageHelper.startPage(postPageQueryDTO.getPage(), postPageQueryDTO.getPageSize());
 
+        if(!"admin".equals(BaseContext.getCurrentRole())){
+            // 用户端只可查看正常状态的贴子
+            postPageQueryDTO.setStatus(true);
+        }
+
         Page<PostVO> page = postMapper.pageQuery(postPageQueryDTO);
         long total = page.getTotal();
         List<PostVO> result = page.getResult();

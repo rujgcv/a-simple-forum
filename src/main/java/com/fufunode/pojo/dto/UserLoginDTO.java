@@ -13,4 +13,6 @@ public class UserLoginDTO implements Serializable {
     private String password;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Role role;
+    private String verifyCode;
+    private String captchaId;
 }

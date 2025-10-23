@@ -20,7 +20,6 @@ public class PedingTab {
     private String type;
     private String description;
     private String imgUrl;
-    private Boolean status;
     private Long userId;
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
