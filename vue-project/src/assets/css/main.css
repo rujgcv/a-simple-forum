@@ -1,0 +1,63 @@
+* {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  font-family: 'Alibaba PuHui','siYuan Hei','Microsoft Yahei'
+  /* font-family: 'Microsoft Yahei'; */
+}
+html,body {
+  height: 100%;
+}
+#app{
+  width: 100%;
+  height: 100%;
+}
+.el-tooltip__trigger:focus-visible {
+  outline: unset;
+}
+
+/* fonts */
+/* 思源黑体 */
+@font-face {
+  font-family: "siYuan Hei";
+  src: url('../fonts/SourceHanSansSC-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "siYuan Hei";
+  src: url('../fonts/SourceHanSansSC-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 思源宋体 */
+@font-face {
+  font-family: "siYuan Song";
+  src: url('../fonts/SourceHanSerifSC-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "siYuan Song";
+  src: url('../fonts/SourceHanSerifSC-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 阿里巴巴惠普 */
+@font-face {
+  font-family: "Alibaba PuHui";
+  src: url('../fonts/Alibaba_PuHuiTi_2.0_55_Regular_55_Regular.ttf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Alibaba PuHui";
+  src: url('../fonts/Alibaba_PuHuiTi_2.0_55_Regular_85_Bold.ttf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
